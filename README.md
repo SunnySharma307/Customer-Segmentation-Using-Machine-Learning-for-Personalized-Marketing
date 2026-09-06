@@ -1,98 +1,156 @@
-# Customer-Segmentation-Using-Machine-Learning-for-Personalized-Marketing
-ML-powered customer segmentation and marketing response prediction using K-Means clustering and supervised learning to identify customer groups, predict campaign responses, and generate actionable marketing insights.
-
 # Customer Segmentation & Marketing Response Prediction
 
-An **ML-powered customer analytics system** that combines **unsupervised and supervised machine learning** to understand customer behavior and improve marketing decisions.
+A production-grade machine learning application that transforms raw customer marketing data into actionable behavioral segments and predicts marketing campaign responsiveness to deliver personalized marketing strategies.
 
-## 📌 Project Overview
+Built with **Python**, **Scikit-Learn**, **XGBoost**, **Plotly**, and **Streamlit**.
 
-This project uses customer demographic, purchasing, website activity, and marketing campaign data to:
+---
 
-1. **Segment customers** into meaningful groups using **K-Means Clustering**.
-2. **Predict marketing campaign responses** using a supervised ML classification model.
+##  Key Features
 
-The system helps businesses identify different customer profiles and determine which customers are more likely to respond to marketing campaigns.
+1. **Unsupervised Customer Segmentation (Model 1)**
+   - **K-Means Clustering** with **StandardScaler** normalization.
+   - **Elbow Method & Silhouette Analysis** across $K \in [2, 10]$ to rigorously select optimal clusters.
+   - **2D PCA Projection** ($PC1$ & $PC2$) with interactive Plotly scatter maps and customer dossiers.
+   - **Dynamic Cluster Profiling**: Programmatically names and profiles customer clusters (e.g. *High-Value Elite*, *Deal & Discount Hunters*, *Digital Convenience*, *Occasional Shoppers*) based on actual centroid characteristics rather than static numeric IDs.
 
-## 🧠 Machine Learning Models
+2. **Supervised Campaign Response Prediction (Model 2)**
+   - Binary classification targeting whether a customer will accept a marketing offer (`Response`).
+   - Models trained & compared: **Logistic Regression**, **Random Forest Classifier**, and **XGBoost**.
+   - Metric suite: Accuracy, Precision, Recall, F1-Score, ROC-AUC, Confusion Matrix, and ROC curves.
+   - Class imbalance handling via balanced class weighting and threshold tuning.
 
-### Model 1 — Customer Segmentation
+3. **Strict Data Leakage Prevention**
+   - Chronological isolation: Distinguishes pre-campaign pilot events (`AcceptedCmp1–5`) from the target campaign (`Response`).
+   - Featurization ordering: Train-test splitting (80/20 stratified) executed *strictly before* fitting any scalers or encoders.
+   - Elimination of identifiers (`Id`) and constant operational columns (`Z_CostContact`, `Z_Revenue`).
 
-**K-Means Clustering (Unsupervised Learning)**
+4. **Dual-Model Integration & Personalized Recommendation Engine**
+   - Connects both models:
+     $$\text{Customer} \longrightarrow \text{K-Means Segment} \longrightarrow \text{Response Classifier} \longrightarrow \text{Propensity Probability} \longrightarrow \text{Personalized Action Playbook}$$
+   - Generates tailored offers, communication channels, messaging tone, and ROI tiers.
 
-Groups customers based on factors such as:
+5. **Interactive Streamlit Web Dashboard**
+   - Modern zinc design system with dark/light mode toggle.
+   - 7 intuitive modules:
+     -  **Executive Dashboard**: High-level KPIs, segment donuts, and conversion benchmarks.
+     -  **Customer Segmentation**: Optimal K evaluation, 2D PCA visualizer, and segment persona cards.
+     -  **Segment Deep-Dive**: Cross-segment product spending breakdown, channel preferences, and income boxplots.
+     -  **Campaign Prediction**: Interactive simulator form to test what-if scenarios and generate marketing recommendations.
+     -  **Customer 360° Profile**: Search customer dossier by ID with product basket breakdown.
+     -  **Data Upload & Validation**: CSV drag-and-drop with delimiter sniffing and schema verification.
+     -  **Methodology & Leakage Audit**: Full model comparison table, ROC curves, confusion matrix, and audit logs.
 
-* Spending behavior
-* Purchase frequency
-* Recency
-* Online/store/catalog activity
-* Household characteristics
-* Campaign engagement
+---
 
-### Model 2 — Campaign Response Prediction
+## ️ Project Architecture
 
-**Supervised Classification**
-
-Predicts whether a customer is likely to respond to a marketing campaign using customer behavior and segmentation information.
-
-## 🔄 Workflow
-
-```text
-Customer Dataset
-       ↓
-Data Cleaning & Preprocessing
-       ↓
-Feature Engineering
-       ↓
-Feature Scaling
-       ↓
-K-Means Clustering
-       ↓
-Customer Segments
-       ↓
-Campaign Response Prediction
-       ↓
-Marketing Insights & Recommendations
+```
+customer-segmentation/
+│
+├── data/
+│   └── customers.csv              # Customer marketing campaign dataset
+│
+├── models/
+│   ├── clustering_model.pkl       # Fitted K-Means model
+│   ├── scaler.pkl                 # StandardScaler for clustering features
+│   ├── pca_model.pkl              # 2D PCA projection model
+│   ├── response_model.pkl         # Trained supervised classifier
+│   ├── preprocessor.pkl           # ColumnTransformer for classification
+│   ├── cluster_profiles.json      # Dynamic segment profiles and descriptions
+│   ├── k_evaluation.json          # Inertia and Silhouette metric scores
+│   ├── model_comparison.json      # Model performance metrics & ROC data
+│   └── processed_customers.csv    # Enriched dataset with segment labels & PCA
+│
+├── notebooks/
+│   └── analysis.ipynb             # Full end-to-end data story and EDA
+│
+├── src/
+│   ├── __init__.py
+│   ├── preprocessing.py           # Robust loading, delimiter sniffing, outlier cleaning
+│   ├── feature_engineering.py     # Aggregations, tenure, age, and channel ratios
+│   ├── clustering.py              # K-Means pipeline, silhouette scores, 2D PCA
+│   ├── prediction.py              # Leakage-free classification & model benchmark
+│   └── recommendations.py         # Personalized recommendation engine
+│
+├── app/
+│   └── streamlit_app.py           # Multi-tab modern Streamlit web application
+│
+├── tests/
+│   └── test_pipeline.py           # Automated unit and integration tests
+│
+├── train.py                       # CLI script to train models and serialize artifacts
+├── requirements.txt               # Pinned package dependencies
+└── README.md                      # Project documentation
 ```
 
-## 📊 Dataset Features
+---
 
-The dataset contains information about:
+##  Quickstart Guide
 
-* Customer demographics
-* Income
-* Education and marital status
-* Household composition
-* Product spending
-* Purchase channels
-* Website activity
-* Marketing campaign acceptance
-* Customer complaints
-* Campaign response
+### 1. Prerequisites
+- Python 3.10+ (tested on Python 3.13)
 
-## 🎯 Project Goals
+### 2. Environment Setup
+```bash
+# Create virtual environment
+python -m venv .venv
 
-* Identify valuable customer segments
-* Understand customer purchasing behavior
-* Predict campaign response
-* Support targeted marketing strategies
-* Reduce ineffective marketing campaigns
-* Enable data-driven customer engagement
+# Activate virtual environment
+# On Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
 
-## 🛠️ Tech Stack
+# Install dependencies
+pip install -r requirements.txt
+```
 
-* **Python**
-* **Pandas**
-* **NumPy**
-* **Scikit-learn**
-* **Matplotlib / Seaborn**
-* **Streamlit**
+### 3. Train Models
+Execute the complete training pipeline to clean data, optimize clusters, and train supervised classifiers:
+```bash
+python train.py
+```
 
-## 🚀 Expected Outcome
+### 4. Launch Web Application
+Start the Streamlit dashboard:
+```bash
+streamlit run app/streamlit_app.py
+```
+Open your browser and navigate to `http://localhost:8501`.
 
-The final system will provide **customer segments, response probabilities, visual analytics, and actionable marketing recommendations** through an interactive dashboard.
+### 5. Run Automated Tests
+```bash
+python -m unittest discover -s tests -p "test_*.py"
+```
 
-> **Segment the customer → Predict the response → Recommend the action.**
+---
 
+##  Dataset Dictionary & Feature Definitions
 
-**Thank you for visiting**
+| Feature | Type | Description |
+|---|---|---|
+| `Id` | Identifier | Unique customer ID (isolated from modeling) |
+| `Year_Birth` | Demographic | Birth year; transformed to `Customer_Age` |
+| `Education` | Categorical | Education level (`Graduation`, `PhD`, `Master`, `Basic`, `2n Cycle`) |
+| `Marital_Status` | Categorical | Relationship status (`Married`, `Together`, `Single`, `Divorced`, `Widow`) |
+| `Income` | Continuous | Yearly household income (missing values imputed by education median) |
+| `Kidhome` / `Teenhome` | Count | Number of small children / teenagers in household |
+| `Dt_Customer` | Date | Date of customer registration; transformed to `Customer_Tenure` |
+| `Recency` | Integer | Number of days since last purchase |
+| `MntWines` ... `MntGoldProds` | Currency | Spending across 6 distinct categories (summed into `Total_Spending`) |
+| `NumWebPurchases` ... | Count | Orders completed across channels (summed into `Total_Purchases`) |
+| `AcceptedCmp1` ... `5` | Binary | Historical acceptance in pilot campaigns |
+| `Response` | Binary (Target) | 1 if customer accepted offer in target campaign, 0 otherwise |
+
+---
+
+## ️ Leakage Prevention Protocol
+- **Target Event**: `Response` is the outcome of the latest campaign.
+- **Featurization Separation**: Feature scaling and one-hot encoding are fit **only** on the training fold during cross-validation and holdout evaluation.
+- **Operational Non-Predictors**: Columns with constant variance (`Z_CostContact`, `Z_Revenue`) and customer IDs are excluded prior to model ingestion.
+
+---
+
+## ️ License
+Distributed under the Apache-2.0 License.
